@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 // type alias
 typealias confirmCompletion = () -> ()
 typealias cancelCompletion = (NSError) -> ()
