@@ -1,0 +1,6 @@
+framework module Pods_PopupManagerTests {
+  umbrella header "Pods-PopupManagerTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
