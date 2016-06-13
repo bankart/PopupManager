@@ -37,6 +37,10 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T6h-71-5CM">
                                 <rect key="frame" x="254" y="326" width="40" height="30"/>
                                 <state key="normal" title="style1"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="layer.cornerRadius" value="5"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="layer.borderWidth" value="2"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="onStyleButton1:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUp-ZY-t57"/>
                                 </connections>
@@ -44,6 +48,10 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hy9-n9-h4R">
                                 <rect key="frame" x="372" y="329" width="42" height="30"/>
                                 <state key="normal" title="style2"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="layer.cornerRadius" value="5"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="layer.borderWidth" value="2"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="onStyleButton2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="20k-OV-5DM"/>
                                 </connections>

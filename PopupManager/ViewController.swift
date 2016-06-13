@@ -11,22 +11,22 @@ import SnapKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var titleLabel : UILabel?
-    @IBOutlet weak var styleButton0 : UIButton?
-    @IBOutlet weak var styleButton1 : UIButton?
-    @IBOutlet weak var styleButton2 : UIButton?
+    @IBOutlet weak var titleLabel : UILabel!
+    @IBOutlet weak var styleButton0 : UIButton!
+    @IBOutlet weak var styleButton1 : UIButton!
+    @IBOutlet weak var styleButton2 : UIButton!
     
     @IBAction func onStyleButton0(sender:AnyObject?) {
         NSLog("onStyleButton0")
         let popup: Popup = Popup()
-        popup.showWithMessageInfo(("style0", {NSLog("confirm completion")}, {_ in }))
-//        popup.showWithMessageInfo((message:"style0", confirm:{NSLog("confirm completion")}, cancel:{NSLog("error: \($0)")}))
-        
+        popup.showWithMessageInfo(("style0-0", {NSLog("confirm completion")}, nil))
+        popup.showWithMessageInfo(("style0-1", nil, {NSLog("error: \($0)")}))
+        popup.showWithMessageInfo(("style0-2", {NSLog("confirm completion")}, {NSLog("error: \($0)")}))
         
         let popupButtonItems: Dictionary<String, PopupButtonItem> =
             [KEY_CANCEL_ITEM:
                 PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
-        popup.showWithMessage("style0", and: popupButtonItems)
+        popup.showWithMessage("style0-3", buttonItems: popupButtonItems)
     }
     
     @IBAction func onStyleButton1(sender:AnyObject?) {
@@ -35,7 +35,7 @@ class ViewController: UIViewController {
         let popupButtonItems: Dictionary<String, PopupButtonItem> =
             [KEY_CONFIRM_ITEM:
                 PopupButtonItem(titleString: "confirm", confirmBlock: {NSLog("confirm completion")})]
-        popup.showWithMessage("style1", and: popupButtonItems)
+        popup.showWithMessage("style1", buttonItems: popupButtonItems)
     }
     
     @IBAction func onStyleButton2(sender:AnyObject?) {
@@ -46,9 +46,12 @@ class ViewController: UIViewController {
                 PopupButtonItem(titleString: "confirm", confirmBlock: {NSLog("confirm completion")}),
              KEY_CANCEL_ITEM:
                 PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
-        popup.showWithMessage("style2", and: popupButtonItems)
+        popup.showWithMessage("style2", buttonItems: popupButtonItems)
     }
     
+    private let padding: CGFloat = 30.0
+    private let buttonGapY: CGFloat = 20.0
+    private let buttonGapX: CGFloat = 15.0
     private func resetUI() {
         self.view.removeConstraints(self.view.constraints)
         
@@ -58,19 +61,24 @@ class ViewController: UIViewController {
         })
         
         self.styleButton0?.snp_makeConstraints(closure: { (make) in
-            make.centerX.equalTo(self.view)
-            make.top.equalTo((self.titleLabel?.snp_bottom)!).offset(5)
+            make.top.equalTo((self.titleLabel?.snp_bottom)!).offset(buttonGapY)
+            make.left.equalTo(self.view).inset(padding)
+            make.width.equalTo(self.styleButton1!)
         })
         
         self.styleButton1?.snp_makeConstraints(closure: { (make) in
-            make.centerX.equalTo(self.view)
-            make.top.equalTo((self.styleButton0?.snp_bottom)!).offset(5)
+            make.top.equalTo(self.styleButton0!)
+            make.leftMargin.equalTo(((self.styleButton0)?.snp_right)!).offset(buttonGapX)
+            make.rightMargin.equalTo((styleButton0?.snp_left)!).offset(buttonGapX)
+            make.width.equalTo(self.styleButton0!)
         })
         
         self.styleButton2?.snp_makeConstraints(closure: { (make) in
-            make.centerX.equalTo(self.view)
-            make.top.equalTo((self.styleButton1?.snp_bottom)!).offset(5)
+            make.top.equalTo(self.styleButton0!)
+            make.right.equalTo(self.view).inset(padding)
+            make.width.equalTo(self.styleButton0!)
         })
+        
     }
     
     override func viewDidLoad() {

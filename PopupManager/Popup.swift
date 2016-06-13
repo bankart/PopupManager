@@ -12,7 +12,7 @@ import UIKit
 // type alias
 typealias confirmCompletion = () -> ()
 typealias cancelCompletion = (NSError) -> ()
-typealias messageTuple = (message:String, confirm:confirmCompletion, cancel:cancelCompletion)
+typealias messageTuple = (message:String, confirm:confirmCompletion?, cancel:cancelCompletion?)
 
 // string key
 let KEY_CONFIRM_ITEM: String = "keyConfirmItem"
@@ -49,22 +49,29 @@ class Popup: UIView {
     
     // MARK: use tuple
     func showWithMessageInfo(messageInfo:messageTuple) {
-        let msg: String = messageInfo.message ?? "no message"
-        NSLog("message: \(msg)")
-        NSLog("confirm: \(messageInfo.confirm)")
-        NSLog("cancel: \(messageInfo.cancel)")
+        NSLog("== showWithMessageInfo ===========================================")
+        NSLog("message: \(messageInfo.message)")
+        if let confirmBlock = messageInfo.confirm {
+            NSLog("confirm: \(messageInfo.confirm)")
+            confirmBlock()
+        }
+        
+        if let cancelBlock = messageInfo.cancel {
+            NSLog("cancel: \(messageInfo.cancel)")
+            cancelBlock(NSError(domain: "popupManager", code: 1000, userInfo: nil))
+        }
     }
     
     // MARK: use dictionary
-    func showWithMessage(message:String, and completions:Dictionary<String, PopupButtonItem>) -> Void {
-        
+    func showWithMessage(message:String, buttonItems:Dictionary<String, PopupButtonItem>) -> Void {
+        NSLog("== showWithMessage ===========================================")
         var log:String = "showWithMessageInfo2 >> message: \(message)"
-        if let confirmItem:PopupButtonItem = completions[KEY_CONFIRM_ITEM] {
+        if let confirmItem:PopupButtonItem = buttonItems[KEY_CONFIRM_ITEM] {
             confirmButtonItem = confirmItem
             log = log + ", has confirm"
         }
         
-        if let cancelItem:PopupButtonItem = completions[KEY_CANCEL_ITEM] {
+        if let cancelItem:PopupButtonItem = buttonItems[KEY_CANCEL_ITEM] {
             cancelButtonItem = cancelItem
             log = log + ", has cancel"
         }
