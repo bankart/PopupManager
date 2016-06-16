@@ -46,6 +46,16 @@ class Popup: UIView {
     
     var confirmButtonItem:PopupButtonItem?
     var cancelButtonItem:PopupButtonItem?
+    var temp: String
+    
+    override init(frame: CGRect) {
+        temp = ""
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: use tuple
     func showWithMessageInfo(messageInfo:messageTuple) {
