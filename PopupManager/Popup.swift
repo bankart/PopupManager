@@ -7,50 +7,26 @@
 //
 
 import UIKit
-
-
-// type alias
-typealias confirmCompletion = () -> ()
-typealias cancelCompletion = (NSError) -> ()
-typealias messageTuple = (message:String, confirm:confirmCompletion?, cancel:cancelCompletion?)
-
-// string key
-let KEY_CONFIRM_ITEM: String = "keyConfirmItem"
-let KEY_CANCEL_ITEM: String = "keyCancelItem"
-
-// popup button item
-struct PopupButtonItem {
-    let title:String
-    var confirm:confirmCompletion?
-    var cancel:cancelCompletion?
-    
-    init(titleString: String, confirmBlock:confirmCompletion) {
-        title = titleString
-        confirm = confirmBlock
-    }
-    
-    init(titleString: String, cancelBlock:cancelCompletion) {
-        title = titleString
-        cancel = cancelBlock
-    }
-    
-    init(titleString:String, confirmBlock:confirmCompletion, cancelBlock:cancelCompletion) {
-        title = titleString
-        confirm = confirmBlock
-        cancel = cancelBlock
-    }
-}
+import SnapKit
 
 // MARK: - class
 class Popup: UIView {
     
+    private let defaultSize: CGSize = CGSizeMake(280.0, 200.0)
+    static let sharedInstance: Popup = Popup.init(frame: CGRectMake(0.0, 0.0, 280.0, 220.0))
+
+    var buttonItems:[PopupItemBase]?
     var confirmButtonItem:PopupButtonItem?
     var cancelButtonItem:PopupButtonItem?
-    var temp: String
+    
     
     override init(frame: CGRect) {
-        temp = ""
         super.init(frame: frame)
+        let compareFrame = CGRectMake(frame.origin.x, frame.origin.y, defaultSize.width, defaultSize.height)
+        if !CGRectContainsRect(frame, compareFrame) {
+            self.frame = compareFrame
+            setNeedsLayout()
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -91,3 +67,44 @@ class Popup: UIView {
     }
     
 }
+
+
+extension Popup {
+    
+    func showWithItems(items:[PopupItemBase]) {
+        
+        self.snp_makeConstraints { (make) in
+            make.center.equalTo(self.superview!)
+        }
+        
+        self.buttonItems = items
+        guard let buttons = self.buttonItems else {
+            NSLog("have no button items")
+            return
+        }
+        
+        let buttonCount: Int = buttons.count
+        let buttonWidth: CGFloat = self.bounds.size.width / CGFloat(buttonCount)
+        buttons.enumerate().forEach { (index, item) in
+            let btn: UIButton = UIButton.init(type: UIButtonType.Custom)
+            var h: CGFloat = buttonWidth
+            if let s: CGSize = item.size {
+                if s.height > buttonWidth {
+                    h = s.height
+                }
+            }
+            btn.frame = CGRectMake(0.0, 0.0, buttonWidth, h)
+            btn.setTitle(item.title, forState: UIControlState.Normal)
+            self.addSubview(btn)
+            btn.snp_makeConstraints(closure: { (make) in
+                make.bottom.equalTo(self)
+                make.left.equalTo(self).inset(buttonWidth*CGFloat(index))
+            })
+        }
+        
+    }
+    
+}
+
+
+

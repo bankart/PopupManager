@@ -40,13 +40,19 @@ class ViewController: UIViewController {
     
     @IBAction func onStyleButton2(sender:AnyObject?) {
         NSLog("onStyleButton2")
-        let popup: Popup = Popup()
-        let popupButtonItems: Dictionary<String, PopupButtonItem> =
-            [KEY_CONFIRM_ITEM:
-                PopupButtonItem(titleString: "confirm", confirmBlock: {NSLog("confirm completion")}),
-             KEY_CANCEL_ITEM:
-                PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
-        popup.showWithMessage("style2", buttonItems: popupButtonItems)
+//        let popup: Popup = Popup()
+//        let popupButtonItems: Dictionary<String, PopupButtonItem> =
+//            [KEY_CONFIRM_ITEM:
+//                PopupButtonItem(titleString: "confirm", confirmBlock: {NSLog("confirm completion")}),
+//             KEY_CANCEL_ITEM:
+//                PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
+//        popup.showWithMessage("style2", buttonItems: popupButtonItems)
+        
+        self.view.addSubview(Popup.sharedInstance)
+        let popupItem:PopupItem = PopupItem.init(message: "test", buttonItems: [PopupButtonItem.init(titleString: "OK", cancelBlock: { (error) in
+            NSLog("touched!!")
+        })])
+        Popup.sharedInstance.showWithItems([popupItem])
     }
     
     private let padding: CGFloat = 30.0
