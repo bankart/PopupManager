@@ -51,16 +51,19 @@ class ViewController: UIViewController {
 //        popup.showWithMessage("style2", buttonItems: popupButtonItems)
         
 //        self.view.addSubview(Popup.sharedInstance)
+        
         var items = [PopupButtonItem]()
         var i: Int = 0
         for _ in 0...3 {
             if i % 2 == 0 {
                 items.append(PopupButtonItem.init(titleString: "OK_\(i)", confirmBlock: {
                     NSLog("touched_confirm!!")
+                    Popup.sharedInstance().hide()
                 }) )
             } else {
                 items.append(PopupButtonItem.init(titleString: "NO_\(i)", cancelBlock: { (error) in
                     NSLog("touched_cancel!! >> error: \(error)")
+                    Popup.sharedInstance().hide()
                 }))
             }
             i = i + 1

@@ -12,10 +12,13 @@ import UIKit
 typealias confirmCompletion = () -> ()
 typealias cancelCompletion = (NSError) -> ()
 typealias messageTuple = (message:String, confirm:confirmCompletion?, cancel:cancelCompletion?)
+typealias DelayedAction = () -> ()
+
 
 // string key
 let KEY_CONFIRM_ITEM: String = "keyConfirmItem"
 let KEY_CANCEL_ITEM: String = "keyCancelItem"
+
 
 // popup button item
 struct PopupButtonItem {
