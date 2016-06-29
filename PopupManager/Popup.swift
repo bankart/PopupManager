@@ -13,20 +13,20 @@ import SnapKit
 class Popup: UIView {
     
     private let defaultSize: CGSize = CGSizeMake(280.0, 200.0)
-    static let sharedInstance: Popup = Popup.init(frame: CGRectMake(0.0, 0.0, 280.0, 220.0))
+    static let sharedInstance: Popup = Popup.init(frame: UIScreen.mainScreen().bounds)
 
-    var buttonItems:[PopupItemBase]?
+    var popupItems:[PopupItem]!
     var confirmButtonItem:PopupButtonItem?
     var cancelButtonItem:PopupButtonItem?
+    var popupView: UIView!
     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        let compareFrame = CGRectMake(frame.origin.x, frame.origin.y, defaultSize.width, defaultSize.height)
-        if !CGRectContainsRect(frame, compareFrame) {
-            self.frame = compareFrame
-            setNeedsLayout()
-        }
+        self.backgroundColor = UIColor.init(colorLiteralRed: 1.0, green: 1.0, blue: 1.0, alpha: 0.45)
+        let tapGR: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(Popup.handleTap(_:)))
+        self.addGestureRecognizer(tapGR)
+        self.popupView = UIView.init(frame: CGRectMake(0.0, 0.0, self.defaultSize.width, self.defaultSize.height))
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -68,42 +68,84 @@ class Popup: UIView {
     
 }
 
+extension Popup: UIGestureRecognizerDelegate {
+    
+    func handleTap(recognizer: UITapGestureRecognizer) {
+        if recognizer.state == UIGestureRecognizerState.Ended {
+            
+        }
+    }
+    
+    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+}
 
 extension Popup {
     
-    func showWithItems(items:[PopupItemBase]) {
+    func showWithItems(items:[PopupItem]) {
         
-        self.snp_makeConstraints { (make) in
-            make.center.equalTo(self.superview!)
-        }
-        
-        self.buttonItems = items
-        guard let buttons = self.buttonItems else {
+        self.popupItems = items
+        guard let popupViewItems = self.popupItems else {
             NSLog("have no button items")
             return
         }
         
-        let buttonCount: Int = buttons.count
-        let buttonWidth: CGFloat = self.bounds.size.width / CGFloat(buttonCount)
-        buttons.enumerate().forEach { (index, item) in
+        if popupViewItems.isEmpty {
+            return
+        }
+        
+        let item = popupViewItems[0]
+        
+        self.frame = CGRectMake(0.0, 0.0, item.size.width, item.size.height)
+        self.snp_makeConstraints { (make) in
+            make.center.equalTo(self.superview!)
+        }
+        
+        let buttonsCount: Int = item.buttonItems.count
+        let buttonWidth: CGFloat = self.bounds.size.width / CGFloat(buttonsCount)
+        let buttonHeight: CGFloat = 35.0
+        item.buttonItems.enumerate().forEach { (index, item) in
             let btn: UIButton = UIButton.init(type: UIButtonType.Custom)
-            var h: CGFloat = buttonWidth
-            if let s: CGSize = item.size {
-                if s.height > buttonWidth {
-                    h = s.height
-                }
-            }
-            btn.frame = CGRectMake(0.0, 0.0, buttonWidth, h)
+            btn.frame = CGRectMake(0.0, 0.0, buttonWidth, buttonHeight)
             btn.setTitle(item.title, forState: UIControlState.Normal)
+            btn.setActionTo({ (button) in
+                if let handler = item.confirm {
+                    handler()
+                }
+                }, forEvents: UIControlEvents.TouchUpInside)
             self.addSubview(btn)
             btn.snp_makeConstraints(closure: { (make) in
                 make.bottom.equalTo(self)
                 make.left.equalTo(self).inset(buttonWidth*CGFloat(index))
             })
         }
-        
     }
     
+}
+
+private extension UIButton {
+    func setOrTriggerClosure(closure:((button: UIButton) -> Void)? = nil) {
+        struct InternalClosureTemporary {
+            static var closure: ((button: UIButton) -> Void)?
+        }
+        
+        if closure != nil {
+            InternalClosureTemporary.closure = closure
+        } else {
+            InternalClosureTemporary.closure?(button:self)
+        }
+    }
+    
+    @objc func triggerActionClosure() {
+        self.setOrTriggerClosure()
+    }
+    
+    func setActionTo(closure:(UIButton) -> Void, forEvents: UIControlEvents ) {
+        self.setOrTriggerClosure(closure)
+        self.addTarget(self, action: #selector(UIButton.triggerActionClosure), forControlEvents: forEvents)
+    }
 }
 
 
