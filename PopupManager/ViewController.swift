@@ -18,24 +18,26 @@ class ViewController: UIViewController {
     
     @IBAction func onStyleButton0(sender:AnyObject?) {
         NSLog("onStyleButton0")
-        let popup: Popup = Popup()
-        popup.showWithMessageInfo(("style0-0", {NSLog("confirm completion")}, nil))
-        popup.showWithMessageInfo(("style0-1", nil, {NSLog("error: \($0)")}))
-        popup.showWithMessageInfo(("style0-2", {NSLog("confirm completion")}, {NSLog("error: \($0)")}))
+//        let popup: Popup = Popup()
+//        popup.showWithMessageInfo(("style0-0", {NSLog("confirm completion")}, nil))
+//        popup.showWithMessageInfo(("style0-1", nil, {NSLog("error: \($0)")}))
+//        popup.showWithMessageInfo(("style0-2", {NSLog("confirm completion")}, {NSLog("error: \($0)")}))
         
         let popupButtonItems: Dictionary<String, PopupButtonItem> =
             [KEY_CANCEL_ITEM:
                 PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
-        popup.showWithMessage("style0-3", buttonItems: popupButtonItems)
+        Popup.sharedInstance().showWithMessage("style0-3", buttonItems: popupButtonItems)
+//        popup.showWithMessage("style0-3", buttonItems: popupButtonItems)
     }
     
     @IBAction func onStyleButton1(sender:AnyObject?) {
         NSLog("onStyleButton1")
-        let popup: Popup = Popup()
+//        let popup: Popup = Popup()
         let popupButtonItems: Dictionary<String, PopupButtonItem> =
             [KEY_CONFIRM_ITEM:
                 PopupButtonItem(titleString: "confirm", confirmBlock: {NSLog("confirm completion")})]
-        popup.showWithMessage("style1", buttonItems: popupButtonItems)
+        Popup.sharedInstance().showWithMessage("style1", buttonItems: popupButtonItems)
+//        popup.showWithMessage("style1", buttonItems: popupButtonItems)
     }
     
     @IBAction func onStyleButton2(sender:AnyObject?) {
@@ -48,11 +50,24 @@ class ViewController: UIViewController {
 //                PopupButtonItem(titleString: "cancel", cancelBlock: {_ in })]
 //        popup.showWithMessage("style2", buttonItems: popupButtonItems)
         
-        self.view.addSubview(Popup.sharedInstance)
-        let popupItem:PopupItem = PopupItem.init(message: "test", buttonItems: [PopupButtonItem.init(titleString: "OK", cancelBlock: { (error) in
-            NSLog("touched!!")
-        })])
-        Popup.sharedInstance.showWithItems([popupItem])
+//        self.view.addSubview(Popup.sharedInstance)
+        var items = [PopupButtonItem]()
+        var i: Int = 0
+        for _ in 0...3 {
+            if i % 2 == 0 {
+                items.append(PopupButtonItem.init(titleString: "OK_\(i)", confirmBlock: {
+                    NSLog("touched_confirm!!")
+                }) )
+            } else {
+                items.append(PopupButtonItem.init(titleString: "NO_\(i)", cancelBlock: { (error) in
+                    NSLog("touched_cancel!! >> error: \(error)")
+                }))
+            }
+            i = i + 1
+        }
+        let popupItem:PopupItem = PopupItem.init(message: "test", buttonItems: items)
+        
+        Popup.sharedInstance().showWithItems([popupItem])
     }
     
     private let padding: CGFloat = 30.0

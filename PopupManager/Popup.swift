@@ -9,6 +9,8 @@
 import UIKit
 import SnapKit
 
+typealias DelayedAction = () -> ()
+
 // MARK: - class
 class Popup: UIView {
     
@@ -31,6 +33,15 @@ class Popup: UIView {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func didMoveToSuperview() {
+        if self.superview != nil {
+            self.popupView.snp_makeConstraints(closure: { (make) in
+                make.center.equalTo(self)
+            })
+            NSLog("snapkitting")
+        }
     }
     
     // MARK: use tuple
@@ -117,8 +128,12 @@ extension Popup {
                 }, forEvents: UIControlEvents.TouchUpInside)
             self.addSubview(btn)
             btn.snp_makeConstraints(closure: { (make) in
-                make.bottom.equalTo(self)
-                make.left.equalTo(self).inset(buttonWidth*CGFloat(index))
+                make.bottom.equalTo(self.popupView)
+                if index == 0 {
+                    make.left.equalTo((buttonWidth + gap)*CGFloat(index)).offset(gap)
+                } else {
+                    make.left.equalTo((buttonWidth + gap)*CGFloat(index))
+                }
             })
         }
     }
@@ -149,4 +164,38 @@ private extension UIButton {
 }
 
 
+private extension UIButton {
+    
+    private func setOrTriggerClosure(closure:((button:UIButton) -> Void)? = nil) {
+        
+        //struct to keep track of current closure
+        struct ClosureStore {
+            static var closure :((button:UIButton) -> Void)?
+        }
+        
+        //if closure has been passed in, set the struct to use it
+        if closure != nil {
+            ClosureStore.closure = closure
+        } else {
+            //otherwise trigger the closure
+            ClosureStore.closure?(button: self)
+        }
+    }
+    
+    @objc private func triggerActionClosure() {
+        self.setOrTriggerClosure()
+    }
+    
+    func setActionTo(closure:(UIButton) -> Void, forEvents :UIControlEvents) {
+        
+        NSLog("execute closure >> \(self.titleLabel?.text!)")
+        closure(self)
+        
+        self.setOrTriggerClosure(closure)
+        self.addTarget(self, action:
+            #selector(UIButton.triggerActionClosure),
+                       forControlEvents: forEvents)
+    }
+    
+}
 
